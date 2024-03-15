@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms'; //para usar el form que cambia los
 import { FirestoreService } from '@core/services/firebase/firestore/firestore.service';
 import { FirebaseService } from '@core/services/firebase/firebase.service';
 import { CloudStorageService } from '@core/services/firebase/cloud-storage/cloud-storage.service';
+import { serverTimestamp } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-profile',
@@ -28,8 +29,7 @@ export class ProfileComponent {
   constructor(
     private authService: AuthenticationFirebaseService, 
     private firestoreService : FirestoreService, 
-    private firebaseService : FirebaseService,
-    private cloudStorage: CloudStorageService) {
+    private firebaseService : FirebaseService) {
   }
 
   ngOnInit(): void {
@@ -39,25 +39,30 @@ export class ProfileComponent {
         // Usuario está iniciado sesión.
         this.auth = auth;
         console.log("El UID del usuario es: " + auth.uid);
-        this.firestoreService.readUser(auth.uid).then(user => {
-          if (user) { // Asegura que user no es null
-            this.email = user.email;
-            this.username = user.username;
-            this.birthDate = user.birthdate;
-            this.profilePhotoURL = user.photoURL;
-          } else {
-            // Maneja el caso de que user sea null, si es necesario
-            console.log('No se encontró el usuario.');
-          }
-        });
-        
-      } else {
-        // No hay usuario iniciado sesión.
-        console.log("No hay usuario iniciado sesión.");
-      }
-    });
+    //     this.firestoreService.readUser(auth.uid).then(user => {
+    //       if (user) { // Asegura que user no es null
 
-  }
+    //       } else {
+    //         // Maneja el caso de que user sea null, si es necesario
+    //         console.log('No se encontró el usuario.');
+    //       }
+    //     });
+        
+    //   } else {
+    //     // No hay usuario iniciado sesión.
+    //     console.log("No hay usuario iniciado sesión.");
+    //   }
+    // });
+      this.firestoreService.readRealTimeUser(auth.uid).subscribe(user => {
+        this.email = user.email;
+        this.username = user.username;
+        this.birthDate = user.birthdate;
+        this.profilePhotoURL = user.photoURL;
+      });
+
+      }})
+    }
+  
   
 
   updateProfile(): void {
@@ -103,12 +108,11 @@ export class ProfileComponent {
         return;
       }
     }
-
     if(Object.keys(changes).length){
-
+      
       this.firestoreService.readUser(this.auth.uid).then(user => {
         if (user) { // Asegura que user no es null
-          this.firebaseService.updateProfileInfo(user, changes, this.selectedFile)
+          this.firebaseService.updateProfileInfo(user, changes, this.selectedFile, this.auth)
         } else {
           // Maneja el caso de que user sea null, si es necesario
           console.log('No se encontró el usuario.');
