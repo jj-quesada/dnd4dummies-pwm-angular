@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Storage, getDownloadURL, listAll, ref } from '@angular/fire/storage';
 import { uploadBytes } from '@firebase/storage';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -8,7 +10,7 @@ import { uploadBytes } from '@firebase/storage';
 export class CloudStorageService {
   urls: String[];
 
-  constructor(private cloudStorage:Storage) { 
+  constructor(private cloudStorage:Storage, private http:HttpClient) { 
     this.urls = [];
   }
   //https://blog.angular-university.io/angular-file-upload/
@@ -27,7 +29,7 @@ export class CloudStorageService {
     return downloadURL;
   }
 
-  async getImagesFromFile(imageRoute:string):  Promise<String[]>{
+  async getImagesFromRoute(imageRoute:string):  Promise<String[]>{
     let urls: String[] = [];  
 
     const storageRef = await ref(this.cloudStorage, imageRoute);
@@ -41,6 +43,11 @@ export class CloudStorageService {
 
     return urls;
     
+  }
+
+  async getSingleImageURL(imageRoute:string): Promise<string>{
+    const storageRef = ref(this.cloudStorage,imageRoute);
+    return await getDownloadURL(storageRef);
   }
 
 

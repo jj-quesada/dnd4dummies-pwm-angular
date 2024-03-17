@@ -17,8 +17,8 @@ export class HeaderComponent implements OnInit {
 
   routesURL = ROUTES;
   searchForm;
-  images: Map<String, String> = new Map();
 
+  insurance: Boolean;
 
   glossaryLiContents = [
     {
@@ -34,8 +34,12 @@ export class HeaderComponent implements OnInit {
       route:"glossary/classes"
     },
     {
+      text:"Alignments",
+      route:"glossary/alignments"
+    },
+    {
       text:"Know your rolls",
-      route:"glossary/know-your-rolls"
+      route:"glossary/info/KnowYourRolls"
     },
     {
       text:"Weapons",
@@ -46,22 +50,33 @@ export class HeaderComponent implements OnInit {
       route:"glossary/spells"
     },
     {
-      text:"Objects",
-      route:"glossary/objects"
-    },
-    {
-      text:"Adventure",
-      route:"glossary/adventure"
+      text:"Combat Gear",
+      route:"glossary/CombatGear"
     },
     {
       text:"Combat",
-      route:"glossary/combat"
+      route:"glossary/info/combat"
+    },
+    {
+      text:"Adventure",
+      route:"glossary/info/adventure"
+    },
+    {
+      text:"Tools",
+      route:"glossary/tools"
+    },
+    {
+      text:"Adventuring Gear",
+      route:"glossary/AdventuringGear"
     }
   ]
 
   currentUser!:any;
   visibilityPopUpLogIn=false;
   validEmailPassword: boolean = true;
+
+  urlLogo!:string;
+  urlProfile!:string;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -73,6 +88,7 @@ export class HeaderComponent implements OnInit {
       search:""
     });
 
+    this.insurance = false;
   }
 
   /*@ViewChild('sidenav') sidenav!: MatSidenav;
@@ -90,9 +106,12 @@ export class HeaderComponent implements OnInit {
       this.currentUser=result;
       //console.log(result);
     });
-    
+
     //this.auth.signOut();
+    
     this.loadImages();
+
+    // this.cleanStorage();
   }
 
   onSubmitForm(searchFormData:any){
@@ -134,15 +153,13 @@ export class HeaderComponent implements OnInit {
       console.log(result)
       this.visibilityPopUpLogIn = false;
     });
-    
+
   }
-
-
 
   parsePhotoGoogleURL(url: string): string {
     // Dividir la URL por el signo igual
     const partes = url.split('=');
-    
+
     if(!url.includes("https://lh3.googleusercontent.com")){
       return url;
     }
@@ -159,25 +176,50 @@ export class HeaderComponent implements OnInit {
     }
   }
 
-  
-
   async loadImages(){
-    this.images.clear();
+    
+    const urlLogo = sessionStorage.getItem('logo.png');
+    const urlProfile = sessionStorage.getItem('usuario.png');
 
-    var url = this.firebaseService.getImagesFromFile("miscPhotos/");
-    await url.then((links) => {
-      const regex = /%2F([^?]+)/;
-      var urls = links; 
+    if (urlLogo && urlProfile) {
 
-      for (let item of urls){
-        const match = item.match(regex);
+      //var image = document.querySelector('.upper-bar_main-logo-image') as HTMLImageElement;
+      this.urlLogo = urlLogo;
 
-        if (match !== null){
-          this.images.set(decodeURIComponent(match[1]), item);
-        }
-      }
+      //var image = document.querySelector('.upper-bar__login-logo-image') as HTMLImageElement;
+      this.urlProfile = urlProfile; // Esto no carga por cosas raras que hicieron
       
-    })
+    } else {
+      !this.insurance ? await this.takeImagesFromCloudService(): console.log("ERROR: Casi se ejecuta un segundo intento de acceder al Cloud.");
+      this.insurance = true;
+    }
+
   }
+
+  async takeImagesFromCloudService(){
+    var url = this.firebaseService.getImagesFromFile("miscPhotos/");
+      await url.then((links) => {
+        const regex = /%2F([^?]+)/;
+        var urls = links; 
+
+        for (let item of urls){
+          const match = item.match(regex);
+  
+          if (match !== null){
+            sessionStorage.setItem(decodeURIComponent(match[1]), JSON.stringify(item).replace(/^["']|["']$/g, ''));
+          }
+        }
+        
+    })
+
+    this.loadImages();
+  }
+
+  async cleanStorage(){
+    localStorage.clear();
+    sessionStorage.clear();
+  }
+
+
 
 }
