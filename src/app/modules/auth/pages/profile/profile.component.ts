@@ -16,9 +16,10 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class ProfileComponent {
 
+  isAuthenticated: Boolean = false;
   username: string = '';
   email: string = '';
-  birthDate: string = '';
+  birthDate!: Date;
   profilePhotoURL: string = '';
 
   newUsername: string = '';
@@ -44,6 +45,7 @@ export class ProfileComponent {
   ngOnInit(): void {
 
      this.authService.currentAuthStatus.subscribe(auth => {
+     this.isAuthenticated = !!auth; //mira si el usuario esta autenticado
       if (auth) {
         // Usuario está iniciado sesión.
         this.auth = auth;
@@ -51,8 +53,9 @@ export class ProfileComponent {
       this.firestoreService.readRealTimeUser(auth.uid).subscribe(user => {
         this.email = user.email;
         this.username = user.username;
-        this.birthDate = user.birthdate;
+        this.birthDate = new Date(user.birthdate.seconds*1000);
         this.profilePhotoURL = user.photoURL;
+        console.log(user)
       });
 
       }})
