@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, HostListener } from '@angular/core';
 import { ROUTES } from '@data/constanst/routes';
 import { FormBuilder } from '@angular/forms';
 import { AuthenticationFirebaseService } from '@core/services/firebase/authentication/authentication-firebase.service';
@@ -7,6 +7,9 @@ import { BehaviorSubject } from 'rxjs';
 import { FirebaseService } from '@core/services/firebase/firebase.service';
 import { MatSidenav } from '@angular/material/sidenav';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { HomeComponent } from '@modules/home/pages/home/home.component';
+import { HomeModule } from '@modules/home/home.module';
+import { NavigationEnd, Router } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -73,6 +76,7 @@ export class HeaderComponent implements OnInit {
 
   currentUser!:any;
   visibilityPopUpLogIn=false;
+  visibilityMatMenuPopUp=false;
   validEmailPassword: boolean = true;
 
   urlLogo!:string;
@@ -82,13 +86,20 @@ export class HeaderComponent implements OnInit {
     private formBuilder: FormBuilder,
     private auth:AuthenticationFirebaseService,
     private firebaseService:FirebaseService,
-    private _snackBar: MatSnackBar
+    private _snackBar: MatSnackBar,
+    private router: Router
   ){
     this.searchForm = this.formBuilder.group({
       search:""
     });
 
     this.insurance = false;
+
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        this.closeSideBar();
+      }
+    });
   }
 
   /*@ViewChild('sidenav') sidenav!: MatSidenav;
@@ -110,7 +121,7 @@ export class HeaderComponent implements OnInit {
     //this.auth.signOut();
     
     this.loadImages();
-
+  
     // this.cleanStorage();
   }
 
@@ -121,8 +132,11 @@ export class HeaderComponent implements OnInit {
 
   openClosePopUp(){
     this.visibilityPopUpLogIn = !this.visibilityPopUpLogIn;
+    this.closeSideBar();
   }
-
+  openCloseMatMenu(){
+    this.visibilityMatMenuPopUp = !this.visibilityMatMenuPopUp;
+  }
   openSnackBar(message: string, action: string) {
     this._snackBar.open(message, action,{
       duration:3000
@@ -140,16 +154,28 @@ export class HeaderComponent implements OnInit {
         this.visibilityPopUpLogIn = false;
       }
     });
+
+    this.closeSideBar();
   }
 
   signOut(){
     this.auth.signOut().then(result => {
       this.openSnackBar("Sign Out","Close")
+      this.router.navigate(["/"]);
     })
+
+    this.closeSideBar();
   }
 
   logInWithGoogle(){
     this.firebaseService.signInWithGoogleProcess().then(result=>{
+      console.log(result)
+      this.visibilityPopUpLogIn = false;
+    });
+
+  }
+  logInWithFacebook(){
+    this.firebaseService.signInWithFacebookProcess().then(result=>{
       console.log(result)
       this.visibilityPopUpLogIn = false;
     });
@@ -220,6 +246,22 @@ export class HeaderComponent implements OnInit {
     sessionStorage.clear();
   }
 
+  openSideBar(){
+    const side = document.querySelector('.side-bar');
 
+    if (side){
+      side.classList.add("visible");
+
+    }
+  }
+
+  closeSideBar(){
+    const side = document.querySelector('.side-bar');
+
+    if (side){
+      side.classList.remove("visible");
+
+    }
+  }
 
 }
