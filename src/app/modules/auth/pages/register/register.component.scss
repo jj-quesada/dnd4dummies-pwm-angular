@@ -1,85 +1,77 @@
 .background-signup{
-    background-image: url('src/assets/images/dice_background_red.png');
+    background-image: url('/assets/images/dice_background_red.png');
     background-repeat: repeat;
     background-size: 30em;
-
-    font-size: 140%;
-
-    height: 82vh;
+    min-height: 85vh;
 
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
 
-}
-
-.main-container{
-  display: grid;
-  grid-template-columns: 1.5fr 1fr;
-
-  color: var(--paleta-beige);
-  font-family: 'Ringbearer', sans-serif;
-
-
-}
-
-.first-col{
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+    .main-signup__title {
+      color: #ffbb00;
+      text-shadow: 3px 0 #000000, -3px 0 #000000, 0 3px #000000, 0 -3px #000000,
+      2px 2px #000000, -2px -2px #000000, 2px -2px #000000, -2px 2px #000000;
+      font-family: 'Ringbearer', sans-serif;
+      margin-bottom: 0;
+    }
 }
 
 .user-info{
     display:flex;
-    flex-direction: column;
-
-    width: 80%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: rgba(28, 60, 71, 0.86);
 }
 
-.parameter{
+.user-profile{
+  width: 150px;
+  height: 150px;
+  overflow: hidden;
+  border-radius: 50%;
+  margin: 0 1em;
+  img {
+    width: 100%;
+    height: auto;
+  }
+}
+
+.texts{
+    flex-grow: 1;
     display: flex;
     flex-direction: column;
-
+    color: var(--paleta-beige);
+    padding: 2em;
+    font-family: 'Platypi', sans-serif;
 }
 
-.parameter__text{
-    color: #c9c5c5;
-    
-    background: linear-gradient(to right, #2e2e2e, #333, #292929, #303030, #2e2e2e);
-    background-size: 200% auto;
-    animation: shimmer 10s infinite linear;
+.parameter__label{
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+  position: relative;
+  font-weight: bolder;
+  color: #ffbb00;
+}
 
+.parameter__text {
+  width: 90%;
+  margin-bottom: 1em;
 }
 
 .parameter__text--birth-date::-webkit-calendar-picker-indicator {
     display: none;
 }
 
-.user-profile{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-
-    height: 14em;
-
-}
-
-.user-profile__img{
-    width: 12em;
-    height: 12em;
-
-    border: .2em solid #ffaa00;
-    border-radius: .5em;
-    box-shadow: .6em .6em .2em rgba(0,0,0,0.5);
-    
-}
-
 .persistence{
     display: flex;
     justify-content: center;
-
+    align-content: center;
+    margin: 1em;
 }
 
 .persistence__button{
@@ -90,7 +82,7 @@
     transition-duration: 0.4s;
     cursor: pointer;
 
-    color:#333;
+    color:#000000;
 
     font-size: 1.5em;
 
@@ -104,22 +96,32 @@
     font-family: 'Ringbearer', sans-serif;
 }
 
-.input-error {
-    border: 1px solid red;
+.persistence__button:hover{
+    border: .05em solid black;
+    box-shadow: #333;
+    box-shadow: .3em .3em .2em rgba(0,0,0,0.5);
 }
 
 .parameter__age-warning{
   font-size: 60%;
-
   position: relative;
-  right: 6.5em;
 }
 
-@media screen and (max-width: 800px), (max-height: 560px) {
-  .background-signup {
-      padding-bottom: 2em;
-      padding-top: 2em;
+@media screen and (max-width: 767px){
+  .main-signup__title {
+    font-size: large;
+  }
+  .user-info {
+    display: flex;
+    flex-direction: column;
+    margin: 0.5em;
+    width: 90%;
+  }
 
-      font-size: 110%;
+  .user-profile {
+    margin-top: 1em;
+  }
+  .texts {
+    width: 90%;
   }
 }
