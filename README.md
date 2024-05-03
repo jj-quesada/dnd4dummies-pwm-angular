@@ -159,11 +159,9 @@ The following tools were utilized in the development of our website:
 
 ## Authors
 
-- [Sara Expósito Suárez](https://github.com/SaraE5)
 - [Álvaro Lettieri Acosta](https://github.com/alvarosacosta)
 - [Juan José Quesada Acosta](https://github.com/jj-quesada)
-- [Juan Pereiro González](https://github.com/jpereiro1)
-- [Adrian Ojeda Núñez](https://github.com/aojedanu)
+
 
 ## License
 
